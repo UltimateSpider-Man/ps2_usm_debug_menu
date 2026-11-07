@@ -4,26 +4,53 @@ This folder rebuilds the debug menu from the SLUS_208.70 prototype and injects i
 
 The final game had the menu compiled out: no `debug_menu` code and no strings. So the menu was re-implemented in R5900 assembly, using the beta's behaviour and layout. It calls only the final game's own functions, at addresses found and checked by disassembly.
 
-Expanded-menu output: `..\out\expanded\SLES_536.72`. It is exactly the same size as the original (6,960,960 bytes), so it can replace the disc's boot ELF in place. Use the clean disc ELF as input; earlier patched executables are not valid build inputs.
+Current-menu output: `..\out\circle_close\SLES_536.72`. It is exactly the same size as the original (6,960,960 bytes), so it can replace the disc's boot ELF in place. Use the clean disc ELF as input; earlier patched executables are not valid build inputs.
 
-## Controls (same bindings as the beta)
+## Controls
 
 | Button | Action |
 |---|---|
-| SELECT | open / close the menu (`DMENU_TOGGLE`) |
+| START, then SELECT on the normal pause menu | close native pause and enter the focused debug menu |
+| START + SELECT | open / close the debug menu; release both buttons before using the combo again |
+| SELECT alone during gameplay | native zoom map when the debug menu is closed |
 | START | release / grab focus: the menu stays on screen and the game runs (`DMENU_FOCUS_TOGGLE`) |
 | D-pad up, down | move the highlight (hold to repeat: 0.25 s, then 0.05 s) |
 | L1 / R1 | page up / down (21 lines) |
 | D-pad left, right | change a value or toggle a bool |
 | X + left/right | accelerated decimal adjustment: default step ×10, AI step ×30 |
 | X | select: enter a submenu, run an action, toggle a bool |
-| Triangle / Circle | back to the parent menu |
+| Circle | close at the main root, including unfocused root; in a focused submenu, back one level |
+| Triangle | back to the parent menu; stays open at the main root |
 
 Up/down/left/right use the same pad axes as the game's front-end menus (`FE_UD`/`FE_LR`).
 
-While the menu has focus, physics is stopped (`game::enable_physics(false)`, as in the beta). The previous state is restored when the menu closes or loses focus. Pause (START) and the city map (SELECT) are ignored while the menu is using those buttons, matching the beta's `had_menu_this_frame` checks.
+While the menu has focus, physics is stopped (`game::enable_physics(false)`, as in the beta). START switches between this state and the visible, unfocused menu with gameplay running. The previous physics state is restored when the menu closes or loses focus. Pause and map input are consumed while the debug menu is visible and until both buttons of a consumed combo have been released. Holding START or the combo produces only one transition; navigation retains its original repeat timing.
 
-One difference from the beta: SELECT opens the menu at any time. The beta only allowed it while physics was stopped from a devkit keyboard or while the "spider monkey" tester was running. On a retail console that meant the menu couldn't be opened at all.
+The START + SELECT combo opens the menu during gameplay. The beta's SELECT-only binding required physics to be stopped from a devkit keyboard or the "spider monkey" tester to be running, which is unsuitable for a retail console.
+
+Venom retains the shipped script's hunger drain after Hero Select. Releasing
+menu focus with START resumes gameplay and the native health drain; no extra
+damage timer or changed hunger rate is injected. In a fresh PCSX2 check, health
+fell from 180 to 171 while the visible menu was unfocused.
+
+The current build is in `../out/circle_close/`: use
+`ULTIMATESPIDERMAN_circle_close.iso` for a fresh disc boot, or `SLES_536.72`
+as an ELF override. Old save states retain their old executable and controls.
+The transition uses native pause deactivation before taking debug focus; it
+does not dismiss memory-card screens or confirmation dialogs.
+
+Circle acts once per press. Holding it after returning from a submenu keeps
+the root open; release and press again to close. START and START + SELECT keep
+their existing focus and visibility controls.
+
+Missions follows the supplied hero-switch video. Spider-Man shows his story
+missions, cinematics and combat tours; Venom shows his story missions,
+cinematics and Hot Pursuit. Credits is shared. The normal PAL city catalog
+contains 34 Spider-Man and 15 Venom entries, alphabetized after the district
+submenus and `UNLOAD CURRENT MISSION`, with original `script (instance)` labels.
+The browser still requires native hero validity and an available mission pack.
+Other hero types keep their native eligibility. Changing hero or scene resets
+the Missions page so reopening begins at the first entries.
 
 ## Menu contents
 
@@ -37,7 +64,19 @@ the game's own font stays unchanged.
 - **Game**
   - **Devopt Ints**: all 76 `os_developer_options` ints, range -1000..1000.
   - **Devopt Flags**: all 150 flags, read and written live.
-  - **Physics Enabled**, **Single Step**, **Slow Motion Enabled** (`FRAME_LOCK` = 120), **Rumble Enabled**, **God Mode** (0–5, `set_god_mode`), **Show Districts**, **Show Hero Position**, **Show FPS**.
+  - **Saved Game Settings**: the 97-field editor.
+  - **Report SLF Recall Timeouts**, **Physics Enabled**, **Single Step**, **Slow Motion Enabled** (`FRAME_LOCK` = 120), **Monkey Enabled**, **Rumble Enabled**, **God Mode** (0–5, `set_god_mode`), **Show Districts**, **Show Hero Position**, **Show FPS**.
+  - **User Camera on Controller 2**, **Invert Camera Look**, **Hires Screenshot**, **Lores Screenshot**, **Toggle Unload All Districts**.
+  - **Save Game**, **Load Game**, **Attempt Auto Load**.
+
+Game follows the supplied November 7, 12:37 recording in the order above,
+independent of which module creates each row. Lores Screenshot is retained
+beside Hires Screenshot. Save and Load initialize their native mode before
+activating the memory-card screen. They enter native pause before activation,
+matching the retail Start-button and pause-menu sequences so
+the title and three slot widgets are populated. Attempt Auto Load waits for
+validated card data, then loads the newest valid slot; errors or leaving the
+native screen cancel the pending request.
 - **Debug Render**: the final's 51 `debug_render_items`, using the game's own names, min and max.
 - **District variants**: every region with more than one variant, shown as `n [0, max]`; changes call `terrain::set_district_variant`.
 - **Level Select / Hero Select**: the beta hero list (ultimate_spiderman, venom_rampage, venom, shield_agent, mary_jane, green_goblin, peter_parker, peter_hooded). Only heroes whose character pack exists on the disc are listed. The swap follows the beta sequence: remove player → wait 2 frames → `add_player` → wait 2 frames → set the health-widget type → close.
@@ -112,7 +151,7 @@ build_injected_elf.cmd "path\original.iso"
 Or invoke the Python helper directly with a clean PAL ELF or ISO:
 
 ```bat
-python build_injected_elf.py "path\SLES_536.72" --output "out\expanded\SLES_536.72"
+python build_injected_elf.py "path\SLES_536.72" --output "out\circle_close\SLES_536.72"
 ```
 
 The helper assembles and injects the menu, runs the full interpreter checks on a
@@ -145,8 +184,8 @@ any conflicting nonzero data is rejected. The source files are read only.
 For a loose ELF, use a trusted original PAL executable:
 
 ```
-python patch_elf.py ..\source\SLES_536.72 ..\out\expanded\SLES_536.72
-python test_dm.py ..\out\expanded\SLES_536.72
+python patch_elf.py ..\source\SLES_536.72 ..\out\circle_close\SLES_536.72
+python test_dm.py ..\out\circle_close\SLES_536.72
 ```
 
 - `patch_iso.py`: validates the ISO9660 boot entry and preserves the disc layout; optionally recovers a verified zero-filled archive tail.
@@ -180,6 +219,44 @@ game's original BSS and heap layout.
 `0xD0000`–`0x100000` is never referenced by the game. EELOAD (`0x82000`) and OPL's EE core and IOP-module storage (`0x84000`–`0xD0000`) stay below it, so the menu can sit there without taking any game memory. One OPL caveat: compatibility modes that move OPL's EE core elsewhere haven't been checked, and cheat devices that use low RAM may collide.
 
 ## Status
+
+### Circle closes only the main root (November 7, 2026)
+
+Use `../out/circle_close/ULTIMATESPIDERMAN_circle_close.iso` or the ELF beside
+it, and fresh-boot instead of loading an old emulator state. Circle closes the
+main root whether focused or visible with gameplay running. In focused
+submenus it returns one level; holding it cannot close the root after Back.
+Triangle keeps its existing Back action and does not close the root. START and
+START + SELECT retain their existing behavior.
+
+The packaged ELF passes the full interpreter suite. PCSX2 verified focused and
+unfocused root closure, nested submenu Back, a held Circle stopping at the
+root, Triangle at root, and restored physics. The ISO differs from the preceding
+verified Game-menu disc only in its boot ELF. See
+`../_verification/circle_close/evidence.md` and the output's `verification.json`.
+
+### Game menu and memory-card build (November 7, 2026)
+
+The preceding build is `../out/game_menu_final/SLES_536.72` and
+`../out/game_menu_final/ULTIMATESPIDERMAN_game_menu.iso`. All 21 Game rows follow the supplied recording, with
+Lores Screenshot retained next to Hires Screenshot and the three card actions
+at the bottom.
+
+The complete interpreter suite passes against the packaged ELF. PCSX2 checks
+opened the settings submenus, saved to a copied card, manually loaded that save,
+automatically loaded the newest valid save, reopened Load, and returned to live
+gameplay with a restored hero. Native pause now runs before mode initialization
+and screen activation; activation does not pause a second time. The native
+title and three slot widgets are visible on reopening. Triangle returns from
+the native card screen.
+
+Allow gameplay to settle after loading before opening another card action:
+the game's deferred unpause can close an immediately reopened screen. Runtime
+checks allow three seconds for that handoff. Original user memory cards were
+read only; all writes used isolated copies. The ISO comparison confirms every
+byte outside the boot ELF is unchanged. Evidence and known limits are in
+`../_verification/game_menu/evidence.md`, with hashes in the output's
+`verification.json`. Physical-console behavior remains untested.
 
 ### Expanded build
 

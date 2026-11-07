@@ -237,7 +237,7 @@ def frame(buttons=(), axes=None, dt=1 / 50.0, show=False):
         dump()
 
 def tap(b, show=False):
-    frame((b,))
+    frame((D.DMENU_TOGGLE, D.DMENU_FOCUS_TOGGLE) if b == D.DMENU_TOGGLE else (b,))
     frame((), show=show)
 
 def dump():
@@ -271,7 +271,7 @@ frame(show=True)
 assert var('dm_active_menu') == 0 and not state['texts']
 assert ('link_system_frame_advance', 0.02) in log, log
 
-tap(D.DMENU_TOGGLE, show=True)                    # SELECT opens the menu
+tap(D.DMENU_TOGGLE, show=True)                    # Start + Select opens the menu
 assert menu_title() == 'Debug Menu'
 assert var('dm_has_focus') == 1 and mem.u32(GAME + D.GAME_STOP_PHYSICS) == 1, 'physics should be stopped'
 assert mem.u32(A.labels['dm_debug_render'] + D.M_COUNT) == D.NUM_DEBUG_RENDER + 1
@@ -480,6 +480,8 @@ from test_game_extra import run as run_game_extra
 run_game_extra(globals())
 from test_missions import run as run_missions
 run_missions(globals())
+from test_mission_heroes import run as run_mission_heroes
+run_mission_heroes()
 from test_entities import run as run_entities
 run_entities(globals())
 from test_game_actions import run as run_game_actions
@@ -492,6 +494,8 @@ from test_ai import run as run_ai
 run_ai()
 from test_controls import run as run_controls
 run_controls()
+from test_start_select import run as run_start_select
+run_start_select()
 from test_hero_marker import run as run_hero_marker
 run_hero_marker()
 from test_slf import run as run_slf

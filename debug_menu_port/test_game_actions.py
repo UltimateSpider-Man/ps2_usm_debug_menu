@@ -16,13 +16,34 @@ def run(ctx):
         open_game(); goto(name); tap(D.DMENU_SELECT)
     def status():
         return mem.cstr(var('dm_ga_status'))
+    def card_calls():
+        return [x for x in log if x[0] in ('game_pause', 'save_screen', 'load_screen', 'card_ui')]
 
     open_game()
+    # Transcribed from the supplied 12:37 video. Keep the existing low-res
+    # capture beside high-res capture while preserving every reference row.
+    expected = [
+        'Devopt Ints', 'Devopt Flags', 'Saved Game Settings',
+        'Report SLF Recall Timeouts', 'Physics Enabled', 'Single Step',
+        'Slow Motion Enabled', 'Monkey Enabled', 'Rumble Enabled', 'God Mode',
+        'Show Districts', 'Show Hero Position', 'Show FPS',
+        'User Camera on Controller 2', 'Invert Camera Look',
+        'Hires Screenshot', 'Lores Screenshot', 'Toggle Unload All Districts',
+        'Save Game', 'Load Game', 'Attempt Auto Load',
+    ]
+    rows, previous = [], 0
+    menu = var('dm_active_menu')
     entry = mem.u32(var('dm_active_menu') + D.M_FIRST)
     while entry:
         name = mem.cstr(mem.u32(entry + D.E_NAME))
+        assert mem.u32(entry + D.E_PREV) == previous
+        rows.append(name)
         assert name != 'Last action' and '[not in retail]' not in name
+        previous = entry
         entry = mem.u32(entry + D.E_NEXT)
+    assert rows == expected, rows
+    assert mem.u32(menu + D.M_COUNT) == len(expected)
+    assert mem.u32(menu + D.M_LAST) == previous
     goto('Report SLF Recall Timeouts')
     assert 'Report SLF Recall Timeouts: False' in [row[4] for row in ctx['state']['texts']]
     tap(D.DMENU_SELECT)
@@ -43,10 +64,19 @@ def run(ctx):
     def get_state(c):
         assert c.r[4] == GAME
         c.r[2] = game_state['value']
+    @stub(X.GAME_PAUSE)
+    def pause_game(c):
+        assert c.r[4] == GAME and var('dm_active_menu') == 0
+        log.append(('game_pause',))
+        if not game_state.get('pause_refuse'):
+            mem.w32(GAME+X.GAME_PAUSED, 1); game_state['value'] = 7
     @stub(X.PAUSE_ACTIVATE)
     def activate(c):
-        assert tuple(c.r[4:7]) == (PAUSE, 6, 1)
+        assert tuple(c.r[4:7]) == (PAUSE, 6, 0)
+        assert mem.u32(GAME+X.GAME_PAUSED) == 1 and game_state['value'] == 7
         assert var('dm_active_menu') == 0
+        if game_state.get('refuse'):
+            log.append(('card_refused',)); return
         mem.w32(PAUSE+8, 6); game_state['value'] = 7
         log.append(('card_ui',))
     @stub(X.SAVE_SCREEN_INIT)
@@ -67,16 +97,22 @@ def run(ctx):
         log.append(('load_file', c.r[5])); mem.w32(HOOKUP+8, 13)
     def close_native():
         mem.w32(PAUSE+8, 0xffffffff); game_state['value'] = 6
+        mem.w32(GAME+X.GAME_PAUSED, 0)
         tick()
 
     log.clear(); select('Save Game')
+    assert card_calls() == [('game_pause',), ('save_screen',), ('card_ui',)], 'pause and initialize native widgets before activation'
     assert ('save_screen',) in log and ('load_screen',) not in log
     assert var('dm_active_menu') == 0
     close_native(); log.clear(); select('Load Game')
+    assert card_calls() == [('game_pause',), ('load_screen',), ('card_ui',)]
     assert ('load_screen',) in log and not var('dm_ga_auto_pause')
     close_native(); log.clear(); select('Attempt Auto Load')
+    assert card_calls() == [('game_pause',), ('load_screen',), ('card_ui',)]
     assert var('dm_ga_auto_pause') == PAUSE
     tick(); tick()
+    assert not any(x[0] == 'find_latest' for x in log), log
+    mem.w32(HOOKUP+8, 18); tick()
     assert not any(x[0] == 'find_latest' for x in log), log
     mem.w32(HOOKUP+8, 1); tick()
     assert ('load_file', 1) in log and not var('dm_ga_auto_pause')
@@ -86,6 +122,28 @@ def run(ctx):
     assert not var('dm_ga_auto_pause') and not log
     close_native(); select('Attempt Auto Load'); log.clear(); close_native()
     assert not var('dm_ga_auto_pause') and not log, 'leaving screen cancels pending load'
+    for invalid_slot in (-1, 3):
+        game_state['latest'] = invalid_slot
+        close_native(); select('Attempt Auto Load'); log.clear()
+        mem.w32(HOOKUP+8, 1); tick()
+        assert not any(x[0] == 'load_file' for x in log)
+        assert not var('dm_ga_auto_pause') and not var('dm_ga_auto_hookup')
+    game_state['latest'] = 1
+    close_native(); game_state['refuse'] = True
+    select('Attempt Auto Load')
+    assert not var('dm_ga_auto_pause') and not var('dm_ga_auto_hookup')
+    assert 'Close the native' in status()
+    game_state['refuse'] = False
+    close_native(); game_state['pause_refuse'] = True; log.clear()
+    select('Save Game')
+    assert card_calls() == [('game_pause',)] and 'Wait for gameplay' in status()
+    game_state['pause_refuse'] = False
+    close_native(); mem.w32(GAME+X.GAME_PAUSED, 1); log.clear()
+    select('Attempt Auto Load')
+    assert not card_calls() and not var('dm_ga_auto_pause')
+    close_native(); mem.w32(PAUSE+8, 0); log.clear(); select('Save Game')
+    assert var('dm_active_menu') and not card_calls(), 'do not replace native dialogs'
+    close_native()
     mem.w32(X.PAUSE_PTR, 0); log.clear(); select('Save Game')
     assert var('dm_active_menu') and not log.count(('card_ui',))
     assert 'unavailable' in status()

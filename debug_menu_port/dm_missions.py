@@ -1,8 +1,9 @@
 """Retail PAL level and mission browsers.
 
 Uses the resident level resource and authored mission tables, never a hardcoded
-list of beta-only scripts. Mission launches retain the game's current-hero
-filter. Native force_mission copies names and queues its own asynchronous unload.
+list of beta-only scripts. Browsing combines native hero validity with the
+reference's Spider-Man/Venom story-family separation. Native force_mission
+copies names and queues its own asynchronous unload.
 The beta's -- REBOOT -- handler is empty (0x403F0C); its row remains a no-op.
 Sibling parent menus share private storage, while children use the shared pool.
 """
@@ -38,6 +39,79 @@ def emit_code(A, S, C):
 
     def add(menu):
         A.la('a0', menu); A.move('a1', 'v0'); call('dm_add_entry')
+
+    # Retail flags often allow Venom to run Spider-Man story/tour scripts.
+    # The reference menu separates those authored families for hero types 1/2.
+    # Input names have already passed the bounded native-name validation.
+    A.label('dm_catalog_mission_kind')
+    A.lbu('t1', 0, 'a0'); A.ori('t1', 't1', 0x20)
+    A.li('t2', ord('s')); A.beq('t1', 't2', '.kind_story'); A.nop()
+    A.li('t2', ord('v')); A.bne('t1', 't2', '.kind_tour'); A.nop()
+    A.label('.kind_story')
+    for off in (1, 2):
+        A.lbu('t2', off, 'a0'); A.addiu('t2', 't2', -ord('0'))
+        A.sltiu('t2', 't2', 10); A.beqz('t2', '.kind_extra'); A.nop()
+    A.lbu('t2', 3, 'a0'); A.li('t3', ord('_'))
+    A.bne('t2', 't3', '.kind_extra'); A.nop()
+    A.li('t2', ord('s')); A.beq('t1', 't2', '.kind_spidey'); A.nop()
+    A.b('.kind_venom'); A.nop()
+    A.label('.kind_extra')
+    A.li('t2', ord('v')); A.bne('t1', 't2', '.kind_tour'); A.nop()
+    for off, ch in ((1, 'm'), (2, 'g'), (3, '_')):
+        A.lbu('t2', off, 'a0')
+        if ch != '_': A.ori('t2', 't2', 0x20)
+        A.li('t3', ord(ch)); A.bne('t2', 't3', '.kind_tour'); A.nop()
+    A.b('.kind_venom'); A.nop()
+    A.label('.kind_tour'); A.move('t0', 'a0'); A.li('t5', 31)
+    A.label('.kind_tour_scan')
+    A.lbu('t2', 0, 't0'); A.beqz('t2', '.kind_shared'); A.nop()
+    A.li('t3', ord('_')); A.bne('t2', 't3', '.kind_tour_next'); A.nop()
+    A.move('t2', 't0'); A.la('t3', S('_combat_tour'))
+    A.label('.kind_tour_compare')
+    A.lbu('t4', 0, 't3'); A.beqz('t4', '.kind_tour_tail'); A.nop()
+    A.lbu('t6', 0, 't2'); A.ori('t6', 't6', 0x20); A.ori('t4', 't4', 0x20)
+    A.bne('t6', 't4', '.kind_tour_next'); A.nop()
+    A.addiu('t2', 't2', 1); A.addiu('t3', 't3', 1)
+    A.b('.kind_tour_compare'); A.nop()
+    A.label('.kind_tour_tail')
+    A.lbu('t4', 0, 't2'); A.beqz('t4', '.kind_spidey'); A.nop()
+    A.addiu('t4', 't4', -ord('0')); A.sltiu('t4', 't4', 10)
+    A.beqz('t4', '.kind_tour_next'); A.nop()
+    A.lbu('t4', 1, 't2'); A.beqz('t4', '.kind_spidey'); A.nop()
+    A.label('.kind_tour_next')
+    A.addiu('t0', 't0', 1); A.addiu('t5', 't5', -1)
+    A.bgtz('t5', '.kind_tour_scan'); A.nop()
+    A.label('.kind_shared'); A.jr('ra'); A.move('v0', 'zero')
+    A.label('.kind_spidey'); A.jr('ra'); A.li('v0', 1)
+    A.label('.kind_venom'); A.jr('ra'); A.li('v0', 2)
+
+    f = A.func('dm_catalog_mission_applies', saves=['s0'])
+    A.move('s0', 'a0'); call(NATIVE['applies_to_hero'])
+    A.beqz('v0', f.epi); A.nop()
+    A.lw('a0', 0x18, 's0'); call('dm_catalog_mission_kind')
+    A.beqz('v0', '.mission_applies_yes'); A.nop()
+    A.lw_abs('t0', 'dm_catalog_hero_type')
+    A.addiu('t1', 't0', -1); A.sltiu('t1', 't1', 2)
+    A.beqz('t1', '.mission_applies_yes'); A.nop()
+    A.xor('v0', 'v0', 't0'); A.sltiu('v0', 'v0', 1); f.ret()
+    A.label('.mission_applies_yes'); A.li('v0', 1); f.end()
+
+    # Sort mode 3: keep district submenus in loaded order, Unload first,
+    # alphabetized mission rows, then stable pagination controls.
+    f = A.func('dm_catalog_mission_rank', saves=['s0'])
+    A.move('s0', 'a0')
+    for text, rank in (('UNLOAD CURRENT MISSION', 0), ('Previous page', 2), ('Next page', 2)):
+        nxt = A.newlabel('mission_rank')
+        A.move('a0', 's0'); A.la('a1', S(text)); call(G['strcasecmp'])
+        A.bnez('v0', nxt); A.nop()
+        A.li('v0', rank); f.ret(); A.label(nxt)
+    A.li('v0', 1); f.end()
+    f = A.func('dm_catalog_mission_compare', saves=['s0', 's1', 's2'])
+    A.move('s0', 'a0'); A.move('s1', 'a1'); call('dm_catalog_mission_rank')
+    A.move('s2', 'v0'); A.move('a0', 's1'); call('dm_catalog_mission_rank')
+    A.subu('v0', 's2', 'v0'); A.bnez('v0', f.epi); A.nop()
+    A.li('t0', 2); A.beq('s2', 't0', f.epi); A.nop()
+    A.move('a0', 's0'); A.move('a1', 's1'); call(G['strcasecmp']); f.end()
 
     # Validate complete ranges in the 32 MiB EE RAM. a0=base, a1=size.
     A.label('dm_catalog_ram')
@@ -198,6 +272,13 @@ def emit_code(A, S, C):
     f = A.func('p_missions_catalog', saves=['s0', 's1', 's2', 's3'])
     A.sw_abs('a0', 'dm_missions_entry')
     A.la('a1', 'dm_missions_menu'); A.la('a2', S('Missions')); call('dm_catalog_parent')
+    A.li('t0', 3); A.sw_abs('t0', 'dm_missions_menu', C['M_SORT'])
+    call('dm_catalog_hero'); A.lw_abs('t0', 'dm_catalog_hero_type')
+    A.bne('v0', 't0', '.missions_reset_page'); A.nop()
+    A.la('a0', 'dm_catalog_scene'); A.li('a1', G['scene_name']); call(G['strcasecmp'])
+    A.beqz('v0', '.missions_page_ready'); A.nop()
+    A.label('.missions_reset_page'); A.sw_abs('zero', 'dm_mission_page')
+    A.label('.missions_page_ready')
     call('dm_catalog_capture_scene')
     A.sw_abs('zero', 'dm_district_page')
     A.li('t0', -1); A.sw_abs('t0', 'dm_catalog_district_index')
@@ -237,6 +318,7 @@ def emit_code(A, S, C):
     A.sw_abs('s1', 'dm_catalog_district_index')
     A.la('a1', 'dm_missions_catalog'); A.lw('a2', C['E_NAME'], 'a0')
     A.move('a3', 'zero'); call('dm_dyn_menu')
+    A.li('t0', 3); A.sw_abs('t0', 'dm_missions_catalog', C['M_SORT'])
     A.la('t0', 'dm_missions_catalog'); A.sw_abs('t0', 'dm_catalog_target')
     A.la('t0', 'dm_missions_menu'); A.sw_abs('t0', 'dm_missions_catalog', C['M_PARENT'])
     A.la('t0', 'dm_dyn_pool_desc'); A.sw_abs('t0', 'dm_catalog_pool')
@@ -303,7 +385,7 @@ def emit_code(A, S, C):
     A.beqz('s1', '.mission_table_done'); A.nop()
     A.lw('s3', 0x18, 's0'); A.move('a0', 's3'); call('dm_catalog_name')
     A.beqz('v0', '.mission_next_condition'); A.nop()
-    A.move('a0', 's0'); call(NATIVE['applies_to_hero'])
+    A.move('a0', 's0'); call('dm_catalog_mission_applies')
     A.beqz('v0', '.mission_next_condition'); A.nop()
     A.move('a0', 'sp'); A.li('a1', 64); A.la('a2', S('pk_%s'))
     A.move('a3', 's3'); call(G['snprintf'])

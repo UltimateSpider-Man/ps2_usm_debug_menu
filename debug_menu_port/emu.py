@@ -184,6 +184,7 @@ class CPU:
             elif fn == 0x00: setr(rd, sx32(r[rt] << sa))
             elif fn == 0x02: setr(rd, sx32((r[rt] & 0xffffffff) >> sa))
             elif fn == 0x03: setr(rd, sx32(s32(r[rt]) >> sa))
+            elif fn == 0x3a: setr(rd, r[rt] >> sa)  # dsrl, used by the native hero filter
             elif fn == 0x08: return r[rs] & 0xffffffff
             elif fn == 0x09:
                 t = r[rs] & 0xffffffff

@@ -1,0 +1,1355 @@
+{
+  "source": "Live PAL CITY_ARENA mission table; flags/instances unchanged",
+  "conditions": [
+    {
+      "name": "s01_fathers_pride",
+      "flags": "0x8000d000",
+      "instances": [
+        "s01_fathers_pride00"
+      ]
+    },
+    {
+      "name": "s02_workout",
+      "flags": "0x8000d000",
+      "instances": [
+        "s02_workout00"
+      ]
+    },
+    {
+      "name": "s03_rhino_rampage_enc",
+      "flags": "0x801e9003",
+      "instances": [
+        "s03_rhino_rampage_enc"
+      ]
+    },
+    {
+      "name": "s04_rhino_beatdown",
+      "flags": "0x8000d003",
+      "instances": [
+        "s04_rhino_beatdown"
+      ]
+    },
+    {
+      "name": "s05_opening_igc",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s05_sky_chase",
+      "flags": "0x8000d003",
+      "instances": [
+        "s05_sky_chase_inst"
+      ]
+    },
+    {
+      "name": "s06_skyscraper_battle",
+      "flags": "0x8000d000",
+      "instances": [
+        "s06_skyscraper_battle_inst"
+      ]
+    },
+    {
+      "name": "s07_opening_igc",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s07_gg_vs_spidey",
+      "flags": "0x8000d000",
+      "instances": [
+        "s07_gg_vs_spidey_inst"
+      ]
+    },
+    {
+      "name": "s07_ending_igc",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s08_class_trip",
+      "flags": "0x8000d000",
+      "instances": [
+        "s08_class_trip00"
+      ]
+    },
+    {
+      "name": "s10_spidey_vs_sable",
+      "flags": "0x8000d000",
+      "instances": [
+        "s10_spidey_vs_sable00"
+      ]
+    },
+    {
+      "name": "s11_defend_sable",
+      "flags": "0x8000d000",
+      "instances": [
+        "s11_defend_sable00"
+      ]
+    },
+    {
+      "name": "s13_final_battle",
+      "flags": "0x8000d000",
+      "instances": [
+        "s13_final_battle00"
+      ]
+    },
+    {
+      "name": "s13_ending_igc",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v01_opening_igc",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v01_feeding_time",
+      "flags": "0x80005000",
+      "instances": [
+        "v01_feeding_time_00"
+      ]
+    },
+    {
+      "name": "v02_wolverine",
+      "flags": "0x80005000",
+      "instances": [
+        "v02_wolverine_00"
+      ]
+    },
+    {
+      "name": "s09_igc1",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v03_opening_igc",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v03_throw_down",
+      "flags": "0x80005000",
+      "instances": [
+        "v03_throw_down_00"
+      ]
+    },
+    {
+      "name": "v07_opening_igc",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v07_electro_chase",
+      "flags": "0x80005000",
+      "instances": [
+        "v07_electro_chase00"
+      ]
+    },
+    {
+      "name": "v08_electro_finale",
+      "flags": "0x80005000",
+      "instances": [
+        "Electro_finale00"
+      ]
+    },
+    {
+      "name": "v09_opening_igc",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_great_escape",
+      "flags": "0x80005000",
+      "instances": [
+        "v09_great_escape00"
+      ]
+    },
+    {
+      "name": "v09_ending_igc",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v10_Beetle_Battle",
+      "flags": "0x80005000",
+      "instances": [
+        "v10_beetle_battle00"
+      ]
+    },
+    {
+      "name": "v12_Venvscar",
+      "flags": "0x80005000",
+      "instances": [
+        "v12_venvscar00"
+      ]
+    },
+    {
+      "name": "credits",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "vmg_hot_pursuit",
+      "flags": "0x80005000",
+      "instances": [
+        "vmg_hot_pursuit_00"
+      ]
+    },
+    {
+      "name": "downtown_combat_tour",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "downtown_combat_tour2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "downtown_combat_tour3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "downtown_combat_tour4",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "midtown_combat_tour",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "midtown_combat_tour2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "midtown_combat_tour3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "midtown_combat_tour4",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "uptown_combat_tour",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "uptown_combat_tour2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "uptown_combat_tour3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "uptown_combat_tour4",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "queens_combat_tour",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "queens_combat_tour2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "queens_combat_tour3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "queens_combat_tour4",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s01_fapr_igc1",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s01_fapr_igc2",
+      "flags": "0x80011000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s01_fapr_igc3",
+      "flags": "0x80011000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s02_wk_igc1",
+      "flags": "0x80011000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s02_wk_igc2",
+      "flags": "0x80011000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s02_wk_igc3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s02_wk_igc4",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s02_wk_igc5",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s03_igc1",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s03_rhrm_igc2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s04_rhbt_igc2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s04_rhbt_igc3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s05_skcs_igc1_01",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s05_skcs_igc1_02",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s05_skcs_igc2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s05_skcs_igc3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s06_skbt_igc1",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s06_skbt_igc2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s07_gg_igc1_01",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s07_gg_igc1_02",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s07_gg_igc2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s07_gg_igc3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s07_gg_igc4",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s08_cltr_igc1",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s08_cltr_igc2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s09_riot_igc1",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s09_riot_igc2_part1",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s09_riot_igc2_part2",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s10_ss_igc1",
+      "flags": "0x80011000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s10_ss_igc2",
+      "flags": "0x80011000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s11_dfsb_igc1",
+      "flags": "0x80011000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "s11_dfsb_igc3",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v01_fdtm_igc1_part1",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v01_fdtm_igc1_part2",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v01_fdtm_igc2",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v02_wlv_igc1",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v03_thdn_igc1",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v03_thdn_igc2",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v07_elcs_igc1_01",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v07_elcs_igc1_02",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v08_elfn_igc2",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_gres_igc1_01",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_gres_igc1_02",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_gres_igc1_03",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_gres_igc2",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_gres_igc3",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_gres_igc4",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_gres_igc5",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v09_gres_igc6",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v10_bebt_igc1",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v10_bebt_igc1B",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v10_bebt_igc2",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "v12_vncr_igc1",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "cutscene_test_a",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "cutscene_test_b",
+      "flags": "0x80005000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "cutscene_morph_test",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    },
+    {
+      "name": "panel_tests",
+      "flags": "0x8000d000",
+      "instances": [
+        null
+      ]
+    }
+  ],
+  "packs": [
+    "AE",
+    "AF",
+    "AG",
+    "AGENT_CARB_ANIM_PACK",
+    "AH",
+    "ARACHNO_MAN_COSTUME",
+    "BC",
+    "BD",
+    "BE",
+    "BF",
+    "BG",
+    "BH",
+    "CARNAGE",
+    "CC",
+    "CD",
+    "CE",
+    "CE_INT_A",
+    "CF",
+    "CG",
+    "CH",
+    "CH_VWR_ALEX_OHIRN",
+    "CH_VWR_ARACHNO_MAN",
+    "CH_VWR_BEETLE_VIEWER",
+    "CH_VWR_BOLIVAR_TRASK_OLD",
+    "CH_VWR_BOOMERANG",
+    "CH_VWR_CARNAGE",
+    "CH_VWR_EDDIE_BROCK",
+    "CH_VWR_EDDIE_BROCK_SR",
+    "CH_VWR_ELECTRO_NOSUIT",
+    "CH_VWR_ELECTRO_SUIT",
+    "CH_VWR_GANG_FTB_BASE",
+    "CH_VWR_GANG_FTB_BOSS",
+    "CH_VWR_GANG_FTB_LT",
+    "CH_VWR_GANG_MERCS_BASE",
+    "CH_VWR_GANG_MERCS_BOSS",
+    "CH_VWR_GANG_MERCS_LT",
+    "CH_VWR_GANG_SKIN_BASE",
+    "CH_VWR_GANG_SKIN_BOSS",
+    "CH_VWR_GANG_SKIN_LT",
+    "CH_VWR_GANG_SRK_BASE",
+    "CH_VWR_GANG_SRK_BOSS",
+    "CH_VWR_GANG_SRK_LT",
+    "CH_VWR_GMU_COP_FAT",
+    "CH_VWR_GMU_SABLE_MERC",
+    "CH_VWR_GREEN_GOBLIN",
+    "CH_VWR_JOHNNY_STORM",
+    "CH_VWR_KONG",
+    "CH_VWR_LIZ_ALLEN",
+    "CH_VWR_MARY_JANE",
+    "CH_VWR_NICK_FURY",
+    "CH_VWR_PETER_HOODED_VIEWER",
+    "CH_VWR_PETER_PARKER_VIEWER",
+    "CH_VWR_RHINO",
+    "CH_VWR_RICHARD_PARKER",
+    "CH_VWR_SABLE",
+    "CH_VWR_SHARON_CARTER",
+    "CH_VWR_SHIELD_AGENT",
+    "CH_VWR_SHOCKER",
+    "CH_VWR_TOOMES",
+    "CH_VWR_ULTIMATE_SPIDERMAN_VWR",
+    "CH_VWR_USM_BLACKSUIT",
+    "CH_VWR_USM_WRESTLING",
+    "CH_VWR_VENOM_VIEWER",
+    "CH_VWR_WOLVERINE",
+    "CI",
+    "CITY_AMBULANCE_BROKEN_PACK",
+    "CITY_AMBULANCE_PACK",
+    "CITY_ARENA",
+    "CITY_ARMORED_CAR_PACK",
+    "CITY_BLINGSUV_PACK",
+    "CITY_BOOMERANG",
+    "CITY_CARA_ANIM_PACK",
+    "CITY_CARA_COP_ANIM_PACK",
+    "CITY_CARA_FTB_ANIM_PACK",
+    "CITY_CARA_GMUM_ANIM_PACK",
+    "CITY_CARA_GMUW_ANIM_PACK",
+    "CITY_CARB_ANIM_PACK",
+    "CITY_CARB_FTB_ANIM_PACK",
+    "CITY_CAR_COMBAT_PACK",
+    "CITY_CAR_COMBAT_PANEL_PACK",
+    "CITY_CAR_PACK",
+    "CITY_COVER_COP_PACK",
+    "CITY_COVER_PACK",
+    "CITY_FAT_COP",
+    "CITY_FTB_BOSS",
+    "CITY_FTB_CAR_PACK",
+    "CITY_FTB_GANG",
+    "CITY_FTB_GANG_COP",
+    "CITY_FTB_LT",
+    "CITY_FTB_LT_TWO",
+    "CITY_FTB_THUG",
+    "CITY_FTB_THUG_TWO",
+    "CITY_GMU_BUSINESSMAN",
+    "CITY_GMU_CHILD_MALE",
+    "CITY_GMU_JOGGER_FEM",
+    "CITY_GMU_MAN",
+    "CITY_GMU_MEDIC_FEM",
+    "CITY_GMU_STOREOWNER",
+    "CITY_GMU_STREET_VENDER",
+    "CITY_GMU_STUDENT_FEMALE",
+    "CITY_GMU_STUDENT_MALE",
+    "CITY_GMU_UTILITY_WORKER_MALE",
+    "CITY_GMU_WOMAN",
+    "CITY_HUMMER_PACK",
+    "CITY_ITEM_BALLOON",
+    "CITY_ITEM_BALLOON_STAND",
+    "CITY_ITEM_BRIEFCASE",
+    "CITY_ITEM_HEALTH_ICON",
+    "CITY_ITEM_HOTDOG_STAND",
+    "CITY_ITEM_MONEYBAG",
+    "CITY_ITEM_PURSE",
+    "CITY_ITEM_SHOPPING_BAG",
+    "CITY_MERC_BOSS",
+    "CITY_MERC_CAR_PACK",
+    "CITY_MERC_GANG",
+    "CITY_MERC_GANG_COP",
+    "CITY_MERC_LT",
+    "CITY_MERC_LT_TWO",
+    "CITY_MERC_THUG",
+    "CITY_MERC_THUG_TWO",
+    "CITY_POLICE_CAR_PACK",
+    "CITY_SHIELDVAN_PACK",
+    "CITY_SHIELD_AGENT",
+    "CITY_SHOCKER",
+    "CITY_SKINHEAD_BOSS",
+    "CITY_SKINHEAD_CAR_PACK",
+    "CITY_SKINHEAD_GANG",
+    "CITY_SKINHEAD_GANG_COP",
+    "CITY_SKINHEAD_LT",
+    "CITY_SKINHEAD_LT_TWO",
+    "CITY_SKINHEAD_THUG",
+    "CITY_SKINHEAD_THUG_TWO",
+    "CITY_SRK_BOSS",
+    "CITY_SRK_CAR_PACK",
+    "CITY_SRK_GANG",
+    "CITY_SRK_GANG_COP",
+    "CITY_SRK_LT",
+    "CITY_SRK_LT_TWO",
+    "CITY_SRK_THUG",
+    "CITY_SRK_THUG_TWO",
+    "CITY_STRIP",
+    "CITY_SUV_PACK",
+    "CITY_TEMP_GUNNER",
+    "CITY_THIN_COP",
+    "CM",
+    "DC",
+    "DD",
+    "DE",
+    "DF",
+    "DF_INT_A",
+    "DF_INT_A_V1",
+    "DG",
+    "DG_INT_A",
+    "DG_INT_B",
+    "DH",
+    "DI",
+    "DJ",
+    "DK",
+    "DL",
+    "DM",
+    "DN",
+    "EC",
+    "ED",
+    "EE",
+    "EF",
+    "EG",
+    "EH",
+    "EI",
+    "EJ",
+    "EK",
+    "EL",
+    "ELECTRO_NOSUIT_PACK",
+    "ELECTRO_SUIT_PACK",
+    "EL_INT_A",
+    "EM",
+    "EN",
+    "EO",
+    "EP",
+    "FC",
+    "FD",
+    "FE",
+    "FF",
+    "FG",
+    "FG_INT_A",
+    "FH",
+    "FI",
+    "FJ",
+    "FK",
+    "FK_INT_A",
+    "FL",
+    "FL_INT_A",
+    "FL_INT_B",
+    "FL_INT_C",
+    "FM",
+    "FM_INT_A",
+    "FM_INT_B",
+    "FM_INT_C",
+    "FN",
+    "FO",
+    "FP",
+    "GAME",
+    "GC",
+    "GD",
+    "GE",
+    "GF",
+    "GG",
+    "GH",
+    "GI",
+    "GJ",
+    "GK",
+    "GK_V1",
+    "GK_V2",
+    "GL",
+    "GLOBALTEXT_ENGLISH",
+    "GLOBALTEXT_FRENCH",
+    "GLOBALTEXT_GERMAN",
+    "GLOBALTEXT_ITALIAN",
+    "GLOBALTEXT_SPANISH",
+    "GM",
+    "GN",
+    "GN_V1",
+    "GN_V2",
+    "GO",
+    "GP",
+    "HC",
+    "HD",
+    "HE",
+    "HF",
+    "HG",
+    "HG_INT_A",
+    "HH",
+    "HI",
+    "HJ",
+    "HK",
+    "HK_V1",
+    "HK_V2",
+    "HL",
+    "HL_V1",
+    "HL_V2",
+    "HM",
+    "HM_V1",
+    "HM_V2",
+    "HN",
+    "HO",
+    "HOT_PURSUIT_CHECKER",
+    "HOT_PURSUIT_SABLE_PACK",
+    "HP",
+    "IC",
+    "ID",
+    "IE",
+    "IF",
+    "IF_INT_A",
+    "IF_INT_B",
+    "IG",
+    "IH",
+    "II",
+    "IJ",
+    "IK",
+    "IL",
+    "IL_V1",
+    "IL_V2",
+    "IM",
+    "IN",
+    "IO",
+    "IP",
+    "JB",
+    "JC",
+    "JD",
+    "JE",
+    "JF",
+    "JG",
+    "JH",
+    "JH_INT_A",
+    "JH_V1",
+    "JH_V2",
+    "JI",
+    "JJ",
+    "JK",
+    "JL",
+    "JM",
+    "JN",
+    "KC",
+    "KD",
+    "KE",
+    "KF",
+    "KG",
+    "KG_INT_A",
+    "KG_V1",
+    "KH",
+    "KI",
+    "KI_INT_A",
+    "KJ",
+    "KK",
+    "KL",
+    "KN",
+    "LC",
+    "LD",
+    "LE",
+    "LEGALSCREEN",
+    "LF",
+    "LF_INT_A",
+    "LG",
+    "LH",
+    "LI",
+    "LJ",
+    "LK",
+    "LL_INT_A",
+    "MC",
+    "MD",
+    "ME",
+    "MEDICAL_GMUM_ANIM_PACK",
+    "MEDICAL_GMUW_ANIM_PACK",
+    "MF",
+    "MG",
+    "MH",
+    "MI",
+    "MJ",
+    "MK",
+    "ML",
+    "NC",
+    "ND",
+    "NE",
+    "NF",
+    "NG",
+    "NH",
+    "NI",
+    "NJ",
+    "NK",
+    "NL",
+    "OD",
+    "OE",
+    "OF",
+    "OG",
+    "OH",
+    "OI",
+    "OJ",
+    "OK",
+    "OL",
+    "OM",
+    "PC",
+    "PD",
+    "PE",
+    "PETER_HOODED",
+    "PETER_HOODED_COSTUME",
+    "PETER_PARKER",
+    "PETER_PARKER_COSTUME",
+    "PF",
+    "PG",
+    "PH",
+    "PI",
+    "PJ",
+    "PK",
+    "PK_BEETLE_DCUT",
+    "PK_BEETLE_DEVICE",
+    "PK_BEETLE_FULL",
+    "PK_BEETLE_LITE",
+    "PK_BEETLE_VORTEX",
+    "PK_BOSS_ENCOUNTER",
+    "PK_CA01_MOVING_CIVS",
+    "PK_CA03_VEHICLES",
+    "PK_CA05_VENDERS",
+    "PK_CAR_MORPH_TEST",
+    "PK_CREDITS",
+    "PK_DOWNTOWN_COMBAT_TOUR",
+    "PK_DOWNTOWN_COMBAT_TOUR2",
+    "PK_DOWNTOWN_COMBAT_TOUR3",
+    "PK_DOWNTOWN_COMBAT_TOUR4",
+    "PK_EO_HUMMER",
+    "PK_LM_FREE_STORM_RACES",
+    "PK_LM_STORM_RACES",
+    "PK_MIDTOWN_COMBAT_TOUR",
+    "PK_MIDTOWN_COMBAT_TOUR2",
+    "PK_MIDTOWN_COMBAT_TOUR3",
+    "PK_MIDTOWN_COMBAT_TOUR4",
+    "PK_OPEN_CITY_MENU_TEST",
+    "PK_PN01_HANGER",
+    "PK_PN04_BEAT_DOWN",
+    "PK_PN04_BEAT_DOWN_ROOFTOP",
+    "PK_PN05_ROBBERY_AV",
+    "PK_PN06_COP_CHASE",
+    "PK_PN07_COP_SHOOTOUT",
+    "PK_PN07_NC_COP_SHOOTOUT_ROOF",
+    "PK_PN07_NOCAR_COP_SHOOTOUT",
+    "PK_PN11_CAR_CHASE",
+    "PK_PN12_MED_AMB_EMERGENCY",
+    "PK_PN12_MED_EMERGENCY",
+    "PK_PN12_MED_THUG_EMERGENCY",
+    "PK_PN12_MED_TWOCIV_EMERGENCY",
+    "PK_PN17_ROBBERY_SF",
+    "PK_PNXX_UNCLE_GTS_PLAYGROUND",
+    "PK_QUEENS_COMBAT_TOUR",
+    "PK_QUEENS_COMBAT_TOUR2",
+    "PK_QUEENS_COMBAT_TOUR3",
+    "PK_QUEENS_COMBAT_TOUR4",
+    "PK_S01_FATHERS_PRIDE",
+    "PK_S01_OPENING_IGC",
+    "PK_S02_WORKOUT",
+    "PK_S03_IGC1",
+    "PK_S03_RHINO_RAMPAGE_ENC",
+    "PK_S04_RHINO_BEATDOWN",
+    "PK_S05_OPENING_IGC",
+    "PK_S05_SKY_CHASE",
+    "PK_S06_SKYSCRAPER_BATTLE",
+    "PK_S07_ENDING_IGC",
+    "PK_S07_GG_VS_SPIDEY",
+    "PK_S07_OPENING_IGC",
+    "PK_S08_CLASS_TRIP",
+    "PK_S08_IGC",
+    "PK_S09_IGC1",
+    "PK_S10_SPIDEY_VS_SABLE",
+    "PK_S11_DEFEND_SABLE",
+    "PK_S13_ENDING_IGC",
+    "PK_S13_FINAL_BATTLE",
+    "PK_SCRIPT_PROFILER_TEST",
+    "PK_SH01_GANG_WAR",
+    "PK_SH01_GANG_WAR_ROOFTOP",
+    "PK_SH02_BREAKIN",
+    "PK_SH02_BREAKIN_THUGS",
+    "PK_SH03_PURSE_SNATCH",
+    "PK_SH07_ROAD_RAGE",
+    "PK_SH09_FOOT_CHASE",
+    "PK_SPIDEY_SENSE_TEST",
+    "PK_TRICK_RACE",
+    "PK_UPTOWN_COMBAT_TOUR",
+    "PK_UPTOWN_COMBAT_TOUR2",
+    "PK_UPTOWN_COMBAT_TOUR3",
+    "PK_UPTOWN_COMBAT_TOUR4",
+    "PK_V01_FEEDING_TIME",
+    "PK_V01_OPENING_IGC",
+    "PK_V02_WOLVERINE",
+    "PK_V03_OPENING_IGC",
+    "PK_V03_THROW_DOWN",
+    "PK_V04_VENOM_VS_SILVER_SABLE",
+    "PK_V07_ELECTRO_CHASE",
+    "PK_V07_OPENING_IGC",
+    "PK_V08_ELECTRO_FINALE",
+    "PK_V09_ENDING_IGC",
+    "PK_V09_GREAT_ESCAPE",
+    "PK_V09_OPENING_IGC",
+    "PK_V10_BEETLE",
+    "PK_V10_BEETLE_BATTLE",
+    "PK_V12_VENVSCAR",
+    "PK_VENOM_TRICK_RACE",
+    "PK_VMG_HOT_PURSUIT",
+    "PL",
+    "QE",
+    "QF",
+    "QG",
+    "QH",
+    "QH_INT_A",
+    "QH_INT_B",
+    "QI",
+    "QJ",
+    "QK",
+    "RD",
+    "RE",
+    "RF",
+    "RG",
+    "RH",
+    "RI",
+    "RJ",
+    "ROAD_RAGE_GMUM_ANIM_PACK",
+    "ROAD_RAGE_GMUW_ANIM_PACK",
+    "S01_DODGE_PACK",
+    "S01_EFFECTS_PACK",
+    "S01_GAMEPLAY_PACK",
+    "S01_IGC2_PACK",
+    "S01_IGC3_PACK",
+    "S01_REDCAR_PACK",
+    "S02_BACK_PACK",
+    "S02_GANG_PACK",
+    "S02_IGC1_PACK",
+    "S02_IGC2_PACK",
+    "S02_IGC3_PACK",
+    "S02_IGC4_PACK",
+    "S02_IGC5_PACK",
+    "S02_MUGGING_PACK",
+    "S02_SHOCKER_PACK",
+    "S03_COPS_PACK",
+    "S03_FX_PACK",
+    "S03_IGC1_PACK",
+    "S03_IGC2_PACK",
+    "S03_RHINO_PACK",
+    "S03_TAM1_PACK",
+    "S03_TAM4_PACK",
+    "S03_TAM5_PACK",
+    "S03_THUGS_PACK",
+    "S04_RHINO_IGC3",
+    "S04_RHINO_PHASE1",
+    "S04_RHINO_PHASE2",
+    "S05_CUT2_PACK",
+    "S05_CUT3_PACK",
+    "S05_FX_PACK",
+    "S05_IGC1_PACK",
+    "S05_IGC2_PACK",
+    "S05_TAM1_PACK",
+    "S05_TAM3_EFFECTS",
+    "S05_TAM3_PACK",
+    "S05_TAM4_PACK",
+    "S06_BEETLE",
+    "S06_END_CUT",
+    "S06_INTRO_CUT",
+    "S07_IGC1_PACK",
+    "S07_IGC2_PACK",
+    "S07_IGC3_PACK",
+    "S07_PHASE2_PACK",
+    "S07_PHASE3_PACK",
+    "S07_TAM3_PACK",
+    "S08_GAMEPLAY_PACK",
+    "S08_IGC1_EFFECTS_PACK",
+    "S08_IGC1_PACK",
+    "S08_IGC2_PACK",
+    "S09_IGC2_2_PACK",
+    "S10_FX",
+    "S10_P2",
+    "S10_P3",
+    "S10_P4",
+    "S10_P5",
+    "S10_P6",
+    "S10_P7",
+    "S10_P8",
+    "S11_P2",
+    "S11_P3",
+    "S11_P4",
+    "SF",
+    "SG",
+    "SH",
+    "SI",
+    "SPIDERMANLOGO",
+    "TG",
+    "TORCH_RACE_RES",
+    "TRICK_RACE_RES",
+    "TS_S01",
+    "TS_S02",
+    "TS_S03",
+    "TS_S04_RHINO_BEATDOWN",
+    "TS_S05",
+    "TS_S06",
+    "TS_S07",
+    "TS_S08",
+    "TS_S10",
+    "TS_S11",
+    "TS_S13",
+    "TS_V01",
+    "TS_V02",
+    "TS_V03",
+    "TS_V07",
+    "TS_V08",
+    "TS_V09",
+    "TS_V10",
+    "TS_V12",
+    "UF",
+    "UF_INT_A",
+    "ULTIMATE_SPIDERMAN",
+    "UN",
+    "UNLOCKABLES",
+    "UNLOCKABLES_CHARS_COSTUMES",
+    "UNLOCKABLES_CONCEPT_ART_A",
+    "UNLOCKABLES_CONCEPT_ART_B",
+    "UNLOCKABLES_CONCEPT_ART_M01",
+    "UNLOCKABLES_CONCEPT_ART_M02",
+    "UNLOCKABLES_CONCEPT_ART_M03",
+    "UNLOCKABLES_CONCEPT_ART_M04",
+    "UNLOCKABLES_CONCEPT_ART_M05",
+    "UNLOCKABLES_CONCEPT_ART_M06",
+    "UNLOCKABLES_CONCEPT_ART_M07",
+    "UNLOCKABLES_CONCEPT_ART_M08",
+    "UNLOCKABLES_CONCEPT_ART_M09",
+    "UNLOCKABLES_CONCEPT_ART_M10",
+    "UNLOCKABLES_CONCEPT_ART_M11",
+    "UNLOCKABLES_CONCEPT_ART_M12",
+    "UNLOCKABLES_CONCEPT_ART_M13",
+    "UNLOCKABLES_CONCEPT_ART_M14",
+    "UNLOCKABLES_CONCEPT_ART_M15",
+    "UNLOCKABLES_CONCEPT_ART_M16",
+    "UNLOCKABLES_CONCEPT_ART_M17",
+    "UNLOCKABLES_CONCEPT_ART_M18",
+    "UNLOCKABLES_CONCEPT_ART_M19",
+    "UNLOCKABLES_COVERS",
+    "UNLOCKABLES_COVERS_TEXTURES_A",
+    "UNLOCKABLES_COVERS_TEXTURES_B",
+    "UNLOCKABLES_COVERS_TEXTURES_C",
+    "UNLOCKABLES_COVERS_TEXTURES_D",
+    "UNLOCKABLES_LANDMARKS",
+    "UNLOCKABLES_LTD_EDITION",
+    "USM_BLACKSUIT_COSTUME",
+    "USM_WRESTLING_COSTUME",
+    "V01_IGC1_1_PACK",
+    "V01_IGC1_2_PACK",
+    "V02_CUTSCENE1_PACK",
+    "V02_CUTSCENE3_PACK",
+    "V02_GAMEPLAY_PACK",
+    "V02_JUKEBOXES",
+    "V07_IGC1_02_PACK",
+    "V08_IGC2_PACK",
+    "V09_CHASE123_PACK",
+    "V09_CUTSCENE1_PACK",
+    "V09_CUTSCENE2_PACK",
+    "V09_CUTSCENE3_PACK",
+    "V09_CUTSCENE5_PACK",
+    "V09_EXTRA_PACK",
+    "V10_END_CUT",
+    "V10_INTRO_CUT",
+    "V10_WH_CUT",
+    "V12_IGC",
+    "V12_ZG_ENTS",
+    "VENOM",
+    "VENOM_SPIDER",
+    "VENOM_TRICK_RACE_RES",
+    "ZG_INT_A",
+    "ZG_INT_B",
+    "ZG_INT_B_V1",
+    "ZG_INT_C",
+    "ZG_INT_D",
+    "ZG_INT_E",
+    "ZG_INT_F",
+    "ZG_INT_G",
+    "ZG_INT_H",
+    "ZG_INT_I",
+    "ZG_INT_J"
+  ]
+}

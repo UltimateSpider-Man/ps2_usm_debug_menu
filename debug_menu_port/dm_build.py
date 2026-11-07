@@ -101,9 +101,11 @@ NUM_DEBUG_RENDER = 51
 # game_control_t (identical in beta and final, bound by game__setup_inputs)
 DMENU_SELECT, DMENU_BACK, DMENU_UD, DMENU_LR, DMENU_FOCUS_TOGGLE, DMENU_TOGGLE = 68, 69, 70, 71, 72, 73
 DMENU_UP, DMENU_DOWN, DMENU_LEFT, DMENU_RIGHT, DMENU_PGUP, DMENU_PGDN = 74, 75, 76, 77, 78, 79
+FE_CIRCLE = 0x51                    # retail FE Circle path: 3796A8 -> 379418
 
 # virtual input slots (same order as beta debug_menu::current_input_state)
 I_SELECT, I_BACK, I_UP, I_DOWN, I_PGUP, I_PGDN, I_LEFT, I_RIGHT, I_TOGGLE, I_FOCUS = range(10)
+I_CIRCLE = 10                       # independent press edge; never repeats
 
 # entry layout
 E_NAME, E_TYPE, E_ID, E_VALUE, E_HANDLER, E_RENDER = 0x00, 0x04, 0x08, 0x0C, 0x10, 0x14
@@ -120,6 +122,13 @@ M_SIZE = 0x20
 N_STATIC, N_DYN = 384, 320
 ROOT_ORDER = ('Warp', 'Game', 'Missions', 'Replay', 'Debug Render', 'District variants',
               'AI', 'Memory', 'Entity Variants', 'Level Select', 'Script', 'Progression', 'Camera')
+GAME_ORDER = ('Devopt Ints', 'Devopt Flags', 'Saved Game Settings',
+              'Report SLF Recall Timeouts', 'Physics Enabled', 'Single Step',
+              'Slow Motion Enabled', 'Monkey Enabled', 'Rumble Enabled', 'God Mode',
+              'Show Districts', 'Show Hero Position', 'Show FPS',
+              'User Camera on Controller 2', 'Invert Camera Look',
+              'Hires Screenshot', 'Lores Screenshot', 'Toggle Unload All Districts',
+              'Save Game', 'Load Game', 'Attempt Auto Load')
 MENU_X, MENU_Y = 25, 45
 VISIBLE_LINES = 21
 
@@ -248,32 +257,33 @@ def build():
     A.jr('ra')
     A.sw('zero', M_COUNT, 'a0')
 
-    # Root order follows the reference menu, with the requested Replay entry.
-    f = A.func('dm_root_rank', saves=['s0', 's1', 's2'])
-    A.move('s0', 'a0')
-    A.la('s1', 'tbl_root_order')
-    A.move('s2', 'zero')
-    A.label('.root_rank_loop')
-    A.lw('a1', 0, 's1')
-    A.beqz('a1', '.root_rank_found')
-    A.nop()
-    A.move('a0', 's0')
-    call(G['strcasecmp'])
-    A.beqz('v0', '.root_rank_found')
-    A.addiu('s1', 's1', 4)
-    A.b('.root_rank_loop')
-    A.addiu('s2', 's2', 1)
-    A.label('.root_rank_found')
-    A.move('v0', 's2')
-    f.end()
-    f = A.func('dm_root_compare', saves=['s0', 's1'])
-    A.move('s0', 'a1')
-    call('dm_root_rank')
-    A.move('s1', 'v0')
-    A.move('a0', 's0')
-    call('dm_root_rank')
-    A.subu('v0', 's1', 'v0')
-    f.end()
+    # Explicit reference orders are independent of module construction order.
+    for kind in ('root', 'game'):
+        f = A.func('dm_%s_rank' % kind, saves=['s0', 's1', 's2'])
+        A.move('s0', 'a0')
+        A.la('s1', 'tbl_%s_order' % kind)
+        A.move('s2', 'zero')
+        A.label('.%s_rank_loop' % kind)
+        A.lw('a1', 0, 's1')
+        A.beqz('a1', '.%s_rank_found' % kind)
+        A.nop()
+        A.move('a0', 's0')
+        call(G['strcasecmp'])
+        A.beqz('v0', '.%s_rank_found' % kind)
+        A.addiu('s1', 's1', 4)
+        A.b('.%s_rank_loop' % kind)
+        A.addiu('s2', 's2', 1)
+        A.label('.%s_rank_found' % kind)
+        A.move('v0', 's2')
+        f.end()
+        f = A.func('dm_%s_compare' % kind, saves=['s0', 's1'])
+        A.move('s0', 'a1')
+        call('dm_%s_rank' % kind)
+        A.move('s1', 'v0')
+        A.move('a0', 's0')
+        call('dm_%s_rank' % kind)
+        A.subu('v0', 's1', 'v0')
+        f.end()
 
     # dm_add_entry(a0=menu, a1=entry): submenu entries grouped at the head (beta behaviour),
     # optional case-insensitive ascending sort inside each group.
@@ -298,6 +308,7 @@ def build():
     A.xor('s4', 't0', 't1')
     A.sltiu('s4', 's4', 1)               # s4 = is_sub
     A.lw('s5', M_SORT, 's0')
+    A.li('t0', 4); A.beq('s5', 't0', '.ae_game_loop'); A.nop()
     # phase 1: walk leading submenu entries
     A.label('.ae_loop1')
     A.beqz('s3', '.ae_insert')
@@ -310,6 +321,7 @@ def build():
     A.nop()
     A.beqz('s5', '.ae_adv1')
     A.nop()
+    A.li('t0', 3); A.beq('s5', 't0', '.ae_adv1'); A.nop()
     A.lw('a0', E_NAME, 's3')
     A.lw('a1', E_NAME, 's1')
     A.addiu('t0', 'zero', 2)
@@ -337,13 +349,26 @@ def build():
     A.nop()
     A.lw('a0', E_NAME, 's3')
     A.lw('a1', E_NAME, 's1')
+    A.li('t0', 3); A.bne('s5', 't0', '.ae_alpha2'); A.nop()
+    call('dm_catalog_mission_compare')
+    A.b('.ae_compare2'); A.nop()
+    A.label('.ae_alpha2')
     call(G['strcasecmp'])
+    A.label('.ae_compare2')
     A.bgtz('v0', '.ae_insert')
     A.nop()
     A.label('.ae_adv2')
     A.move('s2', 's3')
     A.b('.ae_loop2')
     A.lw('s3', E_NEXT, 's3')
+    # Game follows the video's complete order, including its three submenus.
+    A.label('.ae_game_loop')
+    A.beqz('s3', '.ae_insert'); A.nop()
+    A.lw('a0', E_NAME, 's3'); A.lw('a1', E_NAME, 's1')
+    call('dm_game_compare')
+    A.bgtz('v0', '.ae_insert'); A.nop()
+    A.move('s2', 's3')
+    A.b('.ae_game_loop'); A.lw('s3', E_NEXT, 's3')
     A.label('.ae_insert')
     A.sw('s2', E_PREV, 's1')
     A.sw('s3', E_NEXT, 's1')
@@ -636,8 +661,8 @@ def build():
     A.li_f('f22', -0.5)
     A.li_f('f23', 0.25)
     A.li_f('f24', 0.05)
-    A.la('s0', 'dm_input')                   # cur[0..9] prev[16..25] virt[32..41] rep[48..57] timer[64..]
-    for i in range(10):
+    A.la('s0', 'dm_input')                   # 11 slots at offsets 0/16/32/48; timers at 64
+    for i in range(11):
         A.lbu('t0', i, 's0')
         A.sb('t0', 16 + i, 's0')
         A.sb('zero', i, 's0')
@@ -673,7 +698,7 @@ def build():
     for ctrl, slot in ((DMENU_BACK, I_BACK), (DMENU_SELECT, I_SELECT), (DMENU_LEFT, I_LEFT),
                        (DMENU_RIGHT, I_RIGHT), (DMENU_UP, I_UP), (DMENU_DOWN, I_DOWN),
                        (DMENU_PGUP, I_PGUP), (DMENU_PGDN, I_PGDN), (DMENU_TOGGLE, I_TOGGLE),
-                       (DMENU_FOCUS_TOGGLE, I_FOCUS)):
+                       (DMENU_FOCUS_TOGGLE, I_FOCUS), (FE_CIRCLE, I_CIRCLE)):
         read(ctrl)
         set_if_gt(slot)
     read(DMENU_UD)
@@ -684,7 +709,7 @@ def build():
     set_if_lt(I_LEFT)
     # key repeat: 0.25s initial delay, 0.05s repeat (beta values)
     A.label('.gi_repeat')
-    for i in range(10):
+    for i in range(11):
         nxt = A.newlabel('rp')
         same = A.newlabel('rs')
         A.lbu('t0', i, 's0')                 # cur
@@ -716,6 +741,45 @@ def build():
         A.sub_s('f0', 'f0', 'f1')
         A.swc1('f0', 64 + 4 * i, 's0')
         A.label(nxt)
+    # Circle acts once per physical press. Suppress shared Back while held so
+    # returning from a child cannot repeat through parents or close the root.
+    A.lbu('t0', I_CIRCLE, 's0')
+    A.lbu('t1', 16 + I_CIRCLE, 's0')
+    A.sb('zero', 32 + I_CIRCLE, 's0')
+    A.beqz('t0', '.gi_circle_done'); A.nop()
+    A.sb('zero', 32 + I_BACK, 's0')
+    A.bnez('t1', '.gi_circle_done'); A.nop()
+    A.sb('t0', 32 + I_CIRCLE, 's0')
+    A.label('.gi_circle_done')
+    # Visibility/focus are press events, never navigation repeats. Retain a
+    # chord latch until BOTH physical buttons are up, including after closing.
+    A.lbu('t0', I_TOGGLE, 's0')             # physical Select
+    A.lbu('t1', I_FOCUS, 's0')              # physical Start
+    A.sb('zero', 32 + I_TOGGLE, 's0')
+    A.sb('zero', 32 + I_FOCUS, 's0')
+    A.or_('t2', 't0', 't1')
+    A.bnez('t2', '.gi_buttons_down')
+    A.nop()
+    A.sw_abs('zero', 'dm_controls_latched')
+    A.b('.gi_buttons_done')
+    A.nop()
+    A.label('.gi_buttons_down')
+    A.lw_abs('t2', 'dm_controls_latched')
+    A.bnez('t2', '.gi_buttons_done')
+    A.nop()
+    A.and_('t2', 't0', 't1')
+    A.beqz('t2', '.gi_start_only')
+    A.nop()
+    A.sb('t2', 32 + I_TOGGLE, 's0')
+    A.sw_abs('t2', 'dm_controls_latched')
+    A.b('.gi_buttons_done')
+    A.nop()
+    A.label('.gi_start_only')
+    A.lbu('t2', 16 + I_FOCUS, 's0')
+    A.bnez('t2', '.gi_buttons_done')
+    A.nop()
+    A.sb('t1', 32 + I_FOCUS, 's0')
+    A.label('.gi_buttons_done')
     f.end()
 
     def virt(r, slot):
@@ -726,18 +790,21 @@ def build():
     f = A.func('dm_frame_advance', saves=['s0'], fsaves=['f20'])
     A.sw_abs('zero', 'dm_had_menu_this_frame')
     call('dm_gather_input')                  # dt still in $f12
+    A.lw_abs('t0', 'dm_controls_latched')
+    A.sw_abs('t0', 'dm_had_menu_this_frame')  # consume held/released chord tails
+    call('dm_pause_debug_tick')             # native resume may span frames
     A.lw_abs('s0', 'dm_active_menu')
-    A.beqz('s0', '.fa_toggle')
-    A.nop()
-    A.lw_abs('t0', 'dm_has_focus')
-    A.bnez('t0', '.fa_toggle')
-    A.nop()
-    virt('t0', I_FOCUS)                      # visible but unfocused: START re-grabs focus
-    A.beqz('t0', f.epi)
-    A.nop()
-    A.addiu('t0', 'zero', 1)
+    A.bnez('s0', '.fa_toggle'); A.nop()
+    # A new physical Select press in native pause replaces that screen. Check
+    # raw edges: the virtual visibility slot is reserved for the combo.
+    A.la('t0', 'dm_input')
+    A.lbu('t1', I_TOGGLE, 't0'); A.beqz('t1', '.fa_toggle'); A.nop()
+    A.lbu('t1', 16 + I_TOGGLE, 't0'); A.bnez('t1', '.fa_toggle'); A.nop()
+    call('dm_pause_to_debug')
+    A.beqz('v0', '.fa_toggle'); A.nop()
+    A.li('t0', 1)
+    A.sw_abs('t0', 'dm_controls_latched')
     A.sw_abs('t0', 'dm_had_menu_this_frame')
-    call('dm_grab_focus')
     f.ret()
     A.label('.fa_toggle')
     virt('t0', I_TOGGLE)
@@ -746,27 +813,53 @@ def build():
     A.beqz('s0', '.fa_show')
     A.nop()
     call('dm_hide')
-    A.b('.fa_run')
-    A.nop()
+    f.ret()
     A.label('.fa_show')
     call('dm_show')
+    f.ret()
     A.label('.fa_run')
-    A.lw_abs('a0', 'dm_active_menu')
-    A.beqz('a0', f.epi)
+    A.beqz('s0', f.epi)
     A.addiu('t0', 'zero', 1)
     A.sw_abs('t0', 'dm_had_menu_this_frame')
+    # Circle closes only the actual root, including its visible/unfocused
+    # state. Submenus retain focused Back behavior below.
+    virt('t0', I_CIRCLE)
+    A.beqz('t0', '.fa_focus'); A.nop()
+    A.la('t1', 'dm_root_menu')
+    A.bne('s0', 't1', '.fa_focus'); A.nop()
+    call('dm_hide')
+    f.ret()
+    A.label('.fa_focus')
+    virt('t0', I_FOCUS)
+    A.beqz('t0', '.fa_edit')
+    A.nop()
+    A.lw_abs('t0', 'dm_has_focus')
+    A.beqz('t0', '.fa_grab')
+    A.nop()
+    call('dm_release_focus')
+    f.ret()
+    A.label('.fa_grab')
+    call('dm_grab_focus')
+    f.ret()
+    A.label('.fa_edit')
+    A.lw_abs('t0', 'dm_has_focus')
+    A.beqz('t0', f.epi)
+    A.move('a0', 's0')
     call('dm_do_frame_advance')
     f.end()
 
     f = A.func('dm_do_frame_advance', saves=['s0', 's1', 's2'])
     A.move('s0', 'a0')
     virt('t0', I_BACK)
+    virt('t1', I_CIRCLE)
+    A.or_('t0', 't0', 't1')
     A.beqz('t0', '.df_nav')
     A.nop()
     A.lw('t1', M_PARENT, 's0')
     A.beqz('t1', '.df_nav')
     A.nop()
     A.sw_abs('t1', 'dm_active_menu')
+    f.ret()
     A.label('.df_nav')
     A.lw('t0', M_FIRST, 's0')
     A.beqz('t0', f.epi)
@@ -840,19 +933,6 @@ def build():
     A.jal('dm_on_select')
     A.move('a0', 's1')
     A.label('.df_focus')
-    virt('t0', I_FOCUS)                      # START: release focus, keep the menu on screen
-    A.beqz('t0', f.epi)
-    A.nop()
-    A.lw_abs('t1', 'dm_active_menu')
-    A.beqz('t1', f.epi)
-    A.nop()
-    ld_global('a0', G['g_game_ptr'])
-    A.beqz('a0', '.df_nofocus')
-    A.nop()
-    A.lw_abs('a1', 'dm_physics_state_on_exit')
-    call(G['enable_physics'])
-    A.label('.df_nofocus')
-    A.sw_abs('zero', 'dm_has_focus')
     f.end()
 
     # ================================================================ rendering
@@ -1834,7 +1914,7 @@ def build():
     A.la('a0', 'dm_game_menu')
     A.la('a1', S('Game'))
     A.jal('dm_menu_reset')
-    A.move('a2', 'zero')
+    A.li('a2', 4)
     A.la('a0', 'dm_root_menu')
     A.la('a1', 'dm_game_menu')
     A.la('a2', S('Game'))
@@ -1998,6 +2078,10 @@ def build():
     for n in ROOT_ORDER:
         A.word(Ref(S(n)))
     A.word(0)
+    A.label('tbl_game_order')
+    for n in GAME_ORDER:
+        A.word(Ref(S(n)))
+    A.word(0)
     A.label('tbl_camera_names')
     for n in ('Chase', 'User', 'SceneAnalizer'):
         A.word(Ref(S(n)))
@@ -2036,13 +2120,14 @@ def build():
     A.align(16)
     A.label('dm_bss_start')
     for name in ('dm_active_menu', 'dm_has_focus', 'dm_had_menu_this_frame', 'dm_physics_state_on_exit',
+                 'dm_controls_latched',
                  'dm_menu_width', 'dm_menu_height', 'dm_built', 'dm_old_frame_lock',
                  'dm_hero_status', 'dm_hero_frames', 'dm_hero_name'):
         A.label(name)
         A.word(0)
     A.align(16)
     A.label('dm_input')
-    A.space(64 + 4 * 10)
+    A.space(64 + 4 * 11)
     for m in ('dm_root_menu', 'dm_game_menu', 'dm_devopt_ints', 'dm_devopt_flags', 'dm_debug_render',
               'dm_warp_menu', 'dm_district_menu', 'dm_hero_menu', 'dm_level_menu', 'dm_settings_menu') + tuple(
                   m for module in EXTRA_MODULES for m in module.MENUS):

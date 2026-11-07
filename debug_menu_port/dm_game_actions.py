@@ -8,9 +8,12 @@ MENUS = ()
 DYNAMIC_MENUS = ()
 PAUSE_PTR = 0x69BC00                 # g_femanager + 0x18
 PAUSE_ACTIVATE = 0x37EA4C
+PAUSE_DEACTIVATE = 0x37EAC0          # closes the screen and calls game::unpause
 SAVE_SCREEN_INIT, LOAD_SCREEN_INIT = 0x37ED60, 0x37ED80
 FIND_LATEST, LOAD_FILE = 0x2DC098, 0x39CE88
 GET_GAME_STATE, PUSH_PROCESS = 0x260C34, 0x26095C
+GAME_PAUSE = 0x2AF71C
+GAME_PAUSED = 0x1B0
 HIRES_PROCESS, HIRES_WIDTH, HIRES_HEIGHT = 0x66C4F0, 0x66F2A0, 0x66F2A4
 GET_PARTITION, UNLOAD_DISTRICTS = 0x28098C, 0x2A6D38
 MOUSELOOK_PTR = 0x66EC4C
@@ -27,6 +30,40 @@ def emit_code(A, S, C):
         A.beqz(out, fail); A.nop()
         A.lw(out, C['GAME_SETTINGS'], out)
         A.beqz(out, fail); A.nop()
+
+    # Native Start activates transition 1 in state 7 (37E224..37E250), then
+    # the FE switches to root screen 2 (PauseMenuSystem constructor order).
+    # Deactivate performs the FE teardown, sound/rumble restore and unpause
+    # (37EAC0..37EB18). Never dismiss screen 0 dialogs or memory-card screens.
+    # Return 1 when the Select press was consumed, even if unpause was refused.
+    f = A.func('dm_pause_to_debug', saves=['s0', 's1'])
+    A.lw_abs('s0', G['g_game_ptr']); A.beqz('s0', '.pdbg_no'); A.nop()
+    A.lw_abs('s1', PAUSE_PTR); A.beqz('s1', '.pdbg_no'); A.nop()
+    A.lw('t0', 8, 's1'); A.addiu('t0', 't0', -1)
+    A.sltiu('t0', 't0', 2); A.beqz('t0', '.pdbg_no'); A.nop()
+    A.move('a0', 's0'); call(GET_GAME_STATE)
+    A.li('t0', 7); A.bne('v0', 't0', '.pdbg_no'); A.nop()
+    A.move('a0', 's1'); call(PAUSE_DEACTIVATE)
+    A.li('t0', 30); A.sw_abs('t0', 'dm_pause_debug_pending')
+    call('dm_pause_debug_tick')
+    A.label('.pdbg_consumed'); A.li('v0', 1); f.ret()
+    A.label('.pdbg_no'); A.move('v0', 'zero'); f.end()
+
+    # Native pause process contains [7, 14]; unpause enters its end state 14
+    # before the parent gameplay process (state 6) is restored next frame.
+    # Wait for that handoff; do not put debug over a dialog or a refused exit.
+    f = A.func('dm_pause_debug_tick', saves=['s0', 's1'])
+    A.lw_abs('t0', 'dm_pause_debug_pending'); A.beqz('t0', f.epi); A.nop()
+    A.addiu('t0', 't0', -1); A.sw_abs('t0', 'dm_pause_debug_pending')
+    A.li('t0', 1); A.sw_abs('t0', 'dm_had_menu_this_frame')
+    A.lw_abs('s0', G['g_game_ptr']); A.beqz('s0', '.pdt_cancel'); A.nop()
+    A.lw_abs('s1', PAUSE_PTR); A.beqz('s1', '.pdt_cancel'); A.nop()
+    A.move('a0', 's0'); call(GET_GAME_STATE)
+    A.li('t0', 14); A.beq('v0', 't0', f.epi); A.nop()
+    A.li('t0', 6); A.bne('v0', 't0', '.pdt_cancel'); A.nop()
+    A.lw('t0', 8, 's1'); A.bgez('t0', '.pdt_cancel'); A.nop()
+    A.sw_abs('zero', 'dm_pause_debug_pending'); call('dm_show'); f.ret()
+    A.label('.pdt_cancel'); A.sw_abs('zero', 'dm_pause_debug_pending'); f.end()
 
     f = A.func('r_game_action_status', saves=[])
     A.move('a0', 'a1'); A.li('a1', 63); A.la('a2', S('%s'))
@@ -131,24 +168,38 @@ def emit_code(A, S, C):
     A.lw_abs('t0', G['g_world_ptr']); A.beqz('t0', '.ga_card_missing'); A.nop()
     A.lw('t0', C['WORLD_HERO0'], 't0'); A.beqz('t0', '.ga_card_missing'); A.nop()
     A.lw_abs('s1', PAUSE_PTR); A.beqz('s1', '.ga_card_missing'); A.nop()
-    A.lw('t0', 8, 's1'); A.bgez('t0', '.ga_card_busy'); A.nop()
+    A.lw('t0', 8, 's1'); A.bgez('t0', '.ga_card_paused'); A.nop()
     A.lw('t0', 0, 's1'); A.beqz('t0', '.ga_card_missing'); A.nop()
     A.lw('s2', 0x18, 't0'); A.beqz('s2', '.ga_card_missing'); A.nop()
     A.lw('t0', 0x2C, 's2'); A.beqz('t0', '.ga_card_missing'); A.nop()
     A.move('a0', 's0'); call(GET_GAME_STATE)
     A.li('t0', 6); A.bne('v0', 't0', '.ga_card_busy'); A.nop()
-    A.lw_abs('t0', 0x6B7BC8); A.bnez('t0', '.ga_card_busy'); A.nop()
+    A.lw('t0', GAME_PAUSED, 's0'); A.bnez('t0', '.ga_card_busy'); A.nop()
+    A.lw_abs('t0', 0x6B7BC8); A.bnez('t0', '.ga_card_blocked'); A.nop()
     call('dm_hide')
-    A.move('a0', 's1'); A.li('a1', 6); A.li('a2', 1); call(PAUSE_ACTIVATE)
+    # Native Start pauses first (37E228), then activates the UI with a2=0
+    # (37E24C). The pause-process initializer hides old FE widgets: running
+    # it after display activation erases the title and slot list on reopen.
+    A.move('a0', 's0'); call(GAME_PAUSE)
+    A.lw('t0', GAME_PAUSED, 's0'); A.beqz('t0', '.ga_card_busy'); A.nop()
+    # Retail root handlers (38FA5C / 38FA94) initialize the mode BEFORE
+    # activating the display. OnActivate builds the title and slot widgets
+    # from that mode; doing it first leaves the ready screen blank.
     A.beqz('s3', '.ga_card_save'); A.nop()
     A.move('a0', 's1'); call(LOAD_SCREEN_INIT)
+    A.b('.ga_card_activate'); A.nop()
+    A.label('.ga_card_save'); A.move('a0', 's1'); call(SAVE_SCREEN_INIT)
+    A.label('.ga_card_activate')
+    A.move('a0', 's1'); A.li('a1', 6); A.move('a2', 'zero'); call(PAUSE_ACTIVATE)
+    A.lw('t0', 8, 's1'); A.li('t1', 6)
+    A.bne('t0', 't1', '.ga_card_paused'); A.nop()
     A.li('t0', 2); A.bne('s3', 't0', '.ga_card_ready'); A.nop()
     A.sw_abs('s1', 'dm_ga_auto_pause')
     A.lw('t0', 0x2C, 's2'); A.sw_abs('t0', 'dm_ga_auto_hookup')
-    A.b('.ga_card_ready'); A.nop()
-    A.label('.ga_card_save'); A.move('a0', 's1'); call(SAVE_SCREEN_INIT)
     A.label('.ga_card_ready'); status('Native memory-card screen opened'); f.ret()
     A.label('.ga_card_busy'); status('Wait for gameplay and close the pause screen'); f.ret()
+    A.label('.ga_card_paused'); status('Close the native pause or memory-card screen'); f.ret()
+    A.label('.ga_card_blocked'); status('Wait for the native memory-card operation to finish'); f.ret()
     A.label('.ga_card_missing'); status('Memory-card screen unavailable'); f.end()
 
     # Called by hook_tick. PauseMenuSystem already services MemoryUnitManager.
@@ -212,5 +263,6 @@ def emit_data(A, S, C):
 
 
 def emit_bss(A, C):
-    for name in ('dm_ga_status', 'dm_ga_auto_pause', 'dm_ga_auto_hookup'):
+    for name in ('dm_ga_status', 'dm_ga_auto_pause', 'dm_ga_auto_hookup',
+                 'dm_pause_debug_pending'):
         A.align(4); A.label(name); A.word(0)

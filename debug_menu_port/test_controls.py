@@ -35,10 +35,13 @@ def run():
     def frame(buttons=(), dt=.02, axes=None):
         held.clear(); held.update({b: 1 for b in buttons}); held.update(axes or {})
         call('dm_frame_advance', dt=dt)
-    def tap(*buttons): frame(buttons); frame()
+    def tap(*buttons):
+        if buttons == (D.DMENU_TOGGLE,):
+            buttons = (D.DMENU_TOGGLE, D.DMENU_FOCUS_TOGGLE)
+        frame(buttons); frame()
     def selected(): return mem.u32(CHILD + D.M_HIGHLIGHT)
 
-    # SELECT opens, X enters, d-pad/analog navigate, L1/R1 page and Back returns.
+    # Start + Select opens, X enters, d-pad/analog navigate, L1/R1 page and Back returns.
     tap(D.DMENU_TOGGLE); assert var('dm_active_menu') == ROOT and var('dm_has_focus') == 1
     tap(D.DMENU_SELECT); assert var('dm_active_menu') == CHILD and selected() == ENTRIES
     tap(D.DMENU_DOWN); assert selected() == ENTRIES + D.E_SIZE
@@ -48,6 +51,32 @@ def run():
     tap(D.DMENU_PGDN); assert selected() == ENTRIES + D.VISIBLE_LINES * D.E_SIZE
     tap(D.DMENU_PGUP); assert selected() == ENTRIES
     tap(D.DMENU_BACK); assert var('dm_active_menu') == ROOT
+    # Native FE Circle is control 0x51; Triangle/shared Back alone must not
+    # close root. A press that begins in a child returns only one level.
+    CIRCLE = 0x51
+    tap(D.DMENU_BACK); assert var('dm_active_menu') == ROOT
+    tap(CIRCLE)
+    assert var('dm_active_menu') == 0, 'Circle at the root must close debug'
+    assert var('dm_has_focus') == 0 and mem.u32(GAME + D.GAME_STOP_PHYSICS) == 0
+    tap(CIRCLE); assert var('dm_active_menu') == 0, 'Circle must not open debug'
+    tap(D.DMENU_TOGGLE); tap(D.DMENU_SELECT)
+    frame((CIRCLE, D.DMENU_BACK))
+    assert var('dm_active_menu') == ROOT, 'Circle in a child must only go Back'
+    for _ in range(8):
+        frame((CIRCLE, D.DMENU_BACK), dt=.1)
+        assert var('dm_active_menu') == ROOT, 'held Circle must not close after Back'
+    frame(); frame((CIRCLE,))
+    assert var('dm_active_menu') == 0 and var('dm_had_menu_this_frame') == 1
+    frame()
+    tap(D.DMENU_TOGGLE); tap(D.DMENU_FOCUS_TOGGLE)
+    assert var('dm_has_focus') == 0 and mem.u32(GAME + D.GAME_STOP_PHYSICS) == 0
+    tap(CIRCLE)
+    assert var('dm_active_menu') == 0, 'Circle must also close visible unfocused root'
+    mem.w32(GAME + D.GAME_STOP_PHYSICS, 1)
+    tap(D.DMENU_TOGGLE); tap(CIRCLE)
+    assert var('dm_active_menu') == 0 and mem.u32(GAME + D.GAME_STOP_PHYSICS) == 1
+    mem.w32(GAME + D.GAME_STOP_PHYSICS, 0)
+    tap(D.DMENU_TOGGLE)
     tap(D.DMENU_SELECT); assert var('dm_active_menu') == CHILD
 
     # Float accelerator exactly follows beta's virtual SELECT/X event, using
@@ -86,6 +115,7 @@ def run():
     assert var('dm_active_menu') == CHILD and var('dm_has_focus') == 0
     assert mem.u32(GAME + D.GAME_STOP_PHYSICS) == 0
     before = mem.u32(FLOAT); tap(D.DMENU_RIGHT); assert mem.u32(FLOAT) == before
+    tap(CIRCLE); assert var('dm_active_menu') == CHILD, 'unfocused child keeps gameplay input'
     tap(D.DMENU_FOCUS_TOGGLE); assert var('dm_has_focus') == 1
     assert mem.u32(GAME + D.GAME_STOP_PHYSICS) == 1
     tap(D.DMENU_TOGGLE); assert var('dm_active_menu') == 0
